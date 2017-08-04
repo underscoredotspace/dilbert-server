@@ -50,9 +50,8 @@
         const nextLink = document.querySelector('A#next')
 
         fetch(`https://d.op11.co.uk/images/${formatDate(today)}`).then(res => {
-          console.log(res)
           if (!res.ok) {
-            // return new Error(res.status)
+            return new Error(res.status)
           } else {
             return res.blob()
           }
@@ -63,11 +62,21 @@
           nextLink.href = `#/${next}`
         }).catch(err => {
           console.log(err)
+          today = formatDate(new Date())
+          today = `#/${today}`
+          if (window.location.hash !== today) {
+            window.location.hash = today
+          }
         })
 
         console.log('Date updated')
       } else {
         console.error('Invalid Date')
+        today = formatDate(new Date())
+        today = `#/${today}`
+        if (window.location.hash !== today) {
+          window.location.hash = today
+        }
       }
     }
     updateDates()
