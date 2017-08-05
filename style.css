@@ -10,10 +10,20 @@ HTML, BODY, DIV {
   padding: 0;
   margin: 0; 
   text-align: center;
+  background: steelblue;
+  color: whitesmoke;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+A {
+  font-weight: bold;
+  color: palegoldenrod;
+  font-size: 1.5rem;
 }
 
 IMG#dilbert {
   will-change: transform;
   max-width: 100vw;
   display: none;
+  border: white 2px solid;
 }

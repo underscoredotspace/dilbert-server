@@ -49,9 +49,6 @@
       prev = formatDate(dateAdd(today, -1))
       next = formatDate(dateAdd(today, 1))
 
-      var options = {year: 'numeric', month: 'long', day: 'numeric'}
-      dateDisplay.innerText = today.toLocaleDateString('en-GB',options)
-
       fetch(`https://d.op11.co.uk/images/${formatDate(today)}`).then(res => {
         if (!res.ok) {
           return new Error(res.status)
@@ -65,7 +62,8 @@
         image.style.opacity = 1
         prevLink.href = `#/${prev}`
         nextLink.href = `#/${next}`
-
+        const options = {year: 'numeric', month: 'long', day: 'numeric'}
+        dateDisplay.innerText = today.toLocaleDateString('en-GB',options)
       }).catch(err => {
         console.log(err)
         today = formatDate(new Date())
