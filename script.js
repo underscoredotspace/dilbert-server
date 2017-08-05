@@ -39,51 +39,55 @@
   const image = document.querySelector('IMG#dilbert')
   const prevLink = document.querySelector('A#prev')
   const nextLink = document.querySelector('A#next')
+  const dateDisplay = document.querySelector('H1#date')
 
-  window.addEventListener('load', function(e) {
-    function updateDates() {
-      const locHash = window.location.hash.substring(2,12)
-      const dateRegEx = /^\d{4}\/\d{2}\/\d{2}$/
-      if (dateRegEx.test(locHash)) {
-        today = selectedDate()
-        prev = formatDate(dateAdd(today, -1))
-        next = formatDate(dateAdd(today, 1))
+  function updateDates() {
+    const locHash = window.location.hash.substring(2,12)
+    const dateRegEx = /^\d{4}\/\d{2}\/\d{2}$/
+    if (dateRegEx.test(locHash)) {
+      today = selectedDate()
+      prev = formatDate(dateAdd(today, -1))
+      next = formatDate(dateAdd(today, 1))
 
-        fetch(`https://d.op11.co.uk/images/${formatDate(today)}`).then(res => {
-          if (!res.ok) {
-            return new Error(res.status)
-          } else {
-            return res.blob()
-          }
-        }).then(blob => {
-          var imageURL = URL.createObjectURL(blob)
-          image.src = imageURL
-          image.style.display = 'block'
-          image.style.opacity = 1
-          prevLink.href = `#/${prev}`
-          nextLink.href = `#/${next}`
-        }).catch(err => {
-          console.log(err)
-          today = formatDate(new Date())
-          today = `#/${today}`
-          if (window.location.hash !== today) {
-            window.location.hash = today
-          }
-        })
+      var options = {year: 'numeric', month: 'long', day: 'numeric'}
+      dateDisplay.innerText = today.toLocaleDateString('en-GB',options)
 
-        console.log('Date updated')
-      } else {
-        console.error('Invalid Date')
+      fetch(`https://d.op11.co.uk/images/${formatDate(today)}`).then(res => {
+        if (!res.ok) {
+          return new Error(res.status)
+        } else {
+          return res.blob()
+        }
+      }).then(blob => {
+        var imageURL = URL.createObjectURL(blob)
+        image.src = imageURL
+        image.style.display = 'inline'
+        image.style.opacity = 1
+        prevLink.href = `#/${prev}`
+        nextLink.href = `#/${next}`
+
+      }).catch(err => {
+        console.log(err)
         today = formatDate(new Date())
         today = `#/${today}`
         if (window.location.hash !== today) {
           window.location.hash = today
         }
+      })
+
+      console.log('Date updated')
+    } else {
+      console.error('Invalid Date')
+      today = formatDate(new Date())
+      today = `#/${today}`
+      if (window.location.hash !== today) {
+        window.location.hash = today
       }
     }
-    updateDates()
-    window.addEventListener('hashchange', updateDates)
-  })
+  }
+
+  updateDates()
+  window.addEventListener('hashchange', updateDates)
 
   image.addEventListener('touchstart', touchStart)
   image.addEventListener('touchmove', touchMove)
@@ -93,15 +97,16 @@
   image.addEventListener('mousemove', touchMove)
   image.addEventListener('mouseup', touchEnd)
 
-  let swipe, swipeStart, swipeCurrent, swipeDiff, box
+  let swipe, swipeStart, swipeCurrent, swipeDiff, swipePC, box
+  const swipeThreshold = 0.2
 
   function touchStart(e) {
     console.log('started')
     swipe = true
     swipeStart = e.pageX || e.touches[0].pageX
     swipeCurrent = swipeStart
+    swipeDiff = 0
     box = image.getBoundingClientRect()
-    console.log(box)
 
     e.preventDefault()
   }
@@ -110,20 +115,23 @@
     if (swipe) {
       swipeCurrent = e.pageX || e.touches[0].pageX
       swipeDiff = swipeCurrent-swipeStart
+      swipePC = swipeDiff / box.width
+      if (Math.abs(swipePC) > swipeThreshold) {
+        image.style.opacity = 0
+      } else {
+        image.style.opacity = 1 - Math.pow(Math.abs(swipeDiff) / box.width, 0.5)
+      }
       image.style.transform = `translateX(${swipeDiff}px)`
-      image.style.opacity = 1 - Math.pow(Math.abs(swipeDiff) / box.width, 0.5)
     }
   }
 
   function touchEnd(e) {
-    console.log(prevLink.href, nextLink.href)
     console.log('stopped')
     swipe = false
-    const swipePC = swipeDiff / box.width
-    if (swipePC > 0.35) {
+    if (swipePC > swipeThreshold) {
       image.style.display = 'none'
       window.location = prevLink.href
-    } else if (swipePC < -0.35) {
+    } else if (swipePC < -swipeThreshold) {
       image.style.display = 'none'
       window.location = nextLink.href
     }

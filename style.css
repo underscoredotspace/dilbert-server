@@ -9,6 +9,7 @@ HTML {
 HTML, BODY, DIV {
   padding: 0;
   margin: 0; 
+  text-align: center;
 }
 
 IMG#dilbert {
