@@ -10,3 +10,9 @@ HTML, BODY, DIV {
   padding: 0;
   margin: 0; 
 }
+
+IMG#dilbert {
+  will-change: transform;
+  max-width: 100vw;
+  display: none;
+}
