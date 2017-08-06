@@ -6,7 +6,7 @@ HTML {
   box-sizing: inherit; 
 }
 
-HTML, BODY, DIV {
+HTML, BODY {
   padding: 0;
   margin: 0; 
   text-align: center;
@@ -21,9 +21,27 @@ A {
   font-size: 1.5rem;
 }
 
-IMG#dilbert {
+DIV#image-holder {
+  min-height: 3rem;
+  min-width: calc(100vw - 20px);
+  position: relative;
+  display: inline-block;
   will-change: transform;
-  max-width: 100vw;
-  display: none;
-  border: white 2px solid;
+}
+
+IMG#image {
+  max-width: calc(100vw - 20px);
+  display: block;
+  border: 2px solid white;
+  opacity: 0;
+}
+
+DIV#image-status {
+  font-size: 3rem;
+  color: black;
+  font-weight: bolder;
+  position: absolute;
+  top: calc(50% - 1.75rem);
+  left: 0;
+  width: 100%;
 }

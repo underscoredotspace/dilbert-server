@@ -36,7 +36,9 @@
 
   let today, prev, next
 
-  const image = document.querySelector('IMG#dilbert')
+  const imageHolder = document.querySelector('DIV#image-holder')
+  const image = document.querySelector('IMG#image')
+  const imageStatus = document.querySelector('DIV#image-status')
   const prevLink = document.querySelector('A#prev')
   const nextLink = document.querySelector('A#next')
   const dateDisplay = document.querySelector('H1#date')
@@ -56,14 +58,14 @@
           return res.blob()
         }
       }).then(blob => {
-        var imageURL = URL.createObjectURL(blob)
+        const imageURL = URL.createObjectURL(blob)
         image.src = imageURL
-        image.style.display = 'inline'
-        image.style.opacity = 1
+        image.style.opacity = 1;
         prevLink.href = `#/${prev}`
         nextLink.href = `#/${next}`
         const options = {year: 'numeric', month: 'long', day: 'numeric'}
         dateDisplay.innerText = today.toLocaleDateString('en-GB',options)
+        imageStatus.innerText = ''
       }).catch(err => {
         console.log(err)
         today = formatDate(new Date())
@@ -73,7 +75,6 @@
         }
       })
 
-      console.log('Date updated')
     } else {
       console.error('Invalid Date')
       today = formatDate(new Date())
@@ -87,19 +88,18 @@
   updateDates()
   window.addEventListener('hashchange', updateDates)
 
-  image.addEventListener('touchstart', touchStart)
-  image.addEventListener('touchmove', touchMove)
-  image.addEventListener('touchend', touchEnd)
+  imageHolder.addEventListener('touchstart', touchStart)
+  imageHolder.addEventListener('touchmove', touchMove)
+  imageHolder.addEventListener('touchend', touchEnd)
 
-  image.addEventListener('mousedown', touchStart)
-  image.addEventListener('mousemove', touchMove)
-  image.addEventListener('mouseup', touchEnd)
+  imageHolder.addEventListener('mousedown', touchStart)
+  imageHolder.addEventListener('mousemove', touchMove)
+  imageHolder.addEventListener('mouseup', touchEnd)
 
   let swipe, swipeStart, swipeCurrent, swipeDiff, swipePC, box
-  const swipeThreshold = 0.2
+  const swipeThreshold = 0.1
 
   function touchStart(e) {
-    console.log('started')
     swipe = true
     swipeStart = e.pageX || e.touches[0].pageX
     swipeCurrent = swipeStart
@@ -115,26 +115,32 @@
       swipeDiff = swipeCurrent-swipeStart
       swipePC = swipeDiff / box.width
       if (Math.abs(swipePC) > swipeThreshold) {
-        image.style.opacity = 0
+        if (swipeDiff > 0) {
+          imageStatus.innerText = 'Next'
+        } else {
+          imageStatus.innerText = 'Prev'
+        }
       } else {
-        image.style.opacity = 1 - Math.pow(Math.abs(swipeDiff) / box.width, 0.5)
+        imageStatus.innerText = ''
+        image.style.opacity = 0.5
       }
-      image.style.transform = `translateX(${swipeDiff}px)`
+      imageHolder.style.transform = `translateX(${swipeDiff}px)`
     }
   }
 
   function touchEnd(e) {
-    console.log('stopped')
     swipe = false
     if (swipePC > swipeThreshold) {
-      image.style.display = 'none'
+      image.style.opacity = 0
       window.location = prevLink.href
     } else if (swipePC < -swipeThreshold) {
-      image.style.display = 'none'
+      image.style.opacity = 0
       window.location = nextLink.href
+    } else {
+      image.style.opacity = 1
     }
 
-    image.style.opacity = 1
-    image.style.transform = `translateX(0px)`
+    imageStatus.innerText = ''
+    imageHolder.style.transform = `translateX(0px)`
   }
 })();
