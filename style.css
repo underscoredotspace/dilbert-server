@@ -25,13 +25,12 @@ DIV#image-holder {
   min-height: 3rem;
   min-width: calc(100vw - 20px);
   position: relative;
-  display: inline-block;
   will-change: transform;
 }
 
 IMG#image {
   max-width: calc(100vw - 20px);
-  display: block;
+  display: inline;
   border: 2px solid white;
   opacity: 0;
 }
