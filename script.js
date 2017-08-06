@@ -35,6 +35,8 @@
   }
 
   let today, prev, next
+  const currDate = new Date()
+  const firstDate = new Date('16 April 1989')
 
   const imageHolder = document.querySelector('DIV#image-holder')
   const image = document.querySelector('IMG#image')
@@ -48,6 +50,16 @@
     const dateRegEx = /^\d{4}\/\d{2}\/\d{2}$/
     if (dateRegEx.test(locHash)) {
       today = selectedDate()
+      if (selectedDate().toDateString() === firstDate.toDateString()) {
+        prevLink.style.display = 'none'
+      } else {
+        prevLink.style.display = 'inline'
+      }
+      if (selectedDate().toDateString() === currDate.toDateString()) {
+        nextLink.style.display = 'none'
+      } else {
+        nextLink.style.display = 'inline'
+      }
       prev = formatDate(dateAdd(today, -1))
       next = formatDate(dateAdd(today, 1))
 
@@ -87,6 +99,7 @@
 
   updateDates()
   window.addEventListener('hashchange', updateDates)
+  window.addEventListener('keydown', keyPress)
 
   imageHolder.addEventListener('touchstart', touchStart)
   imageHolder.addEventListener('touchmove', touchMove)
@@ -116,13 +129,13 @@
       swipePC = swipeDiff / box.width
       if (Math.abs(swipePC) > swipeThreshold) {
         if (swipeDiff > 0) {
-          imageStatus.innerText = 'Next'
-        } else {
           imageStatus.innerText = 'Prev'
+        } else {
+          imageStatus.innerText = 'Next'
         }
       } else {
         imageStatus.innerText = ''
-        image.style.opacity = 0.5
+        image.style.opacity = 0.25
       }
       imageHolder.style.transform = `translateX(${swipeDiff}px)`
     }
@@ -130,10 +143,10 @@
 
   function touchEnd(e) {
     swipe = false
-    if (swipePC > swipeThreshold) {
+    if (swipePC > swipeThreshold && prevLink.style.display === 'inline') {
       image.style.opacity = 0
       window.location = prevLink.href
-    } else if (swipePC < -swipeThreshold) {
+    } else if (swipePC < -swipeThreshold && nextLink.style.display === 'inline') {
       image.style.opacity = 0
       window.location = nextLink.href
     } else {
@@ -142,5 +155,13 @@
 
     imageStatus.innerText = ''
     imageHolder.style.transform = `translateX(0px)`
+  }
+
+  function keyPress(e) {
+    if (e.key === 'ArrowRight' && nextLink.style.display === 'inline') {
+      window.location = nextLink.href
+    } else if (e.key === 'ArrowLeft' && prevLink.style.display === 'inline') {
+      window.location = prevLink.href
+    }
   }
 })();
