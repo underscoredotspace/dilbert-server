@@ -30,7 +30,7 @@
   }
 
   function selectedDate() {
-    const selDate = new Date(window.location.hash.substring(2,12))
+    const selDate = new Date(window.location.hash.substring(2))
     return selDate
   }
 
@@ -46,7 +46,7 @@
   const dateDisplay = document.querySelector('H1#date')
 
   function updateDates() {
-    const locHash = window.location.hash.substring(2,12)
+    const locHash = window.location.hash.substring(2)
     const dateRegEx = /^\d{4}\/\d{2}\/\d{2}$/
     if (dateRegEx.test(locHash)) {
       today = selectedDate()
@@ -84,9 +84,11 @@
         today = `#/${today}`
         if (window.location.hash !== today) {
           window.location.hash = today
+        } else {
+          // we're at today and still got an error. probably means the cron is not working
+          alert('Something is wrong - today\'s strip isn\'t there')
         }
       })
-
     } else {
       console.error('Invalid Date')
       today = formatDate(new Date())
